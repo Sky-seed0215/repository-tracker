@@ -3,6 +3,5 @@ __pycache__/
 
 .env
 .venv
-.json
 env/
 venv/

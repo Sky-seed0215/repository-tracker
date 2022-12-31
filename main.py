@@ -11,6 +11,7 @@ class MyBot(commands.Bot):
         super().__init__(command_prefix='!tc ', intents=intents)
     async def on_ready(self):
         await self.load_extension("jishaku")
+        await self.load_extension("cog.tracker")
         os.environ["JISHAKU_NO_UNDERSCORE"] = "True"
         os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True"
         print('Logged on as')
