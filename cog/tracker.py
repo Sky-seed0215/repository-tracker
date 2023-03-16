@@ -76,6 +76,27 @@ class Tracker(commands.Cog):
             embed.set_footer(text=f'issue#{number}:{res["labels"][0]["name"]}')
             await interaction.response.send_message(embed=embed)
 
+    @group.command(name="info", description="Displays details of the selected repository.")
+    async def info(self, interaction: Interaction, prefix: str):
+        repo = sql.User.get_repo(discord_id=interaction.user.id, prefix=prefix)
+        url = f"https://api.github.com/repos/{repo.owner}/{repo.repo}"
+        r = requests.get(url=url)
+        resp = r.json()
+
+        embed = Embed(color=0x1e90ff, timestamp=datetime.datetime.now(pytz.timezone('Asia/Tokyo')), title=resp["full_name"], url=resp["html_url"])
+        embed.add_field(name="owner", value=f'[{resp["owner"]["login"]}]({resp["owner"]["url"]})')
+        embed.set_image(url=resp["owner"]["avatar_url"])
+        embed.add_field(name="description", value=resp["description"])
+        embed.add_field(name="archived?", value=resp["archived"])
+        embed.add_field(name="license", value=resp["license"]["name"])
+        embed.add_field(name="SSH URL", value=resp["ssh_url"], inline=False)
+        embed.add_field(name="Clone URL", value=resp["clone_url"], inline=False)
+        embed.add_field(name="forks", value=resp["forks"])
+        embed.add_field(name="Watchers", value=resp["watchers"])
+        embed.add_field(name="default branch", value=resp["default_branch"])
+        embed.add_field(name="Open issues", value=resp["open_issues"])
+
+        await interaction.response.send_message(embed=embed)
 
 async def setup(bot):
     await bot.add_cog(Tracker(bot), guilds=[Object(id=840469180171550752)])
